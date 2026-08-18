@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products - Choose Currency</title>
+
+    <style>
+        * {
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    margin: 0;
+    background: #f5f6fa;
+    color: #222;
+}
+
+h1 {
+    color: #333;
+    margin: 30px 0;
+}
+
+table {
+    border-collapse: collapse;
+    width: 90%;
+    margin: auto;
+    background: white;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+th {
+    background: #6c63ff;
+    color: white;
+    padding: 12px;
+}
+
+td {
+    border-bottom: 1px solid #eee;
+    padding: 12px;
+}
+
+tr:hover {
+    background: #f1f1ff;
+}
+
+button {
+    border: none;
+    background: #6c63ff;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #645aec;
+}
+
+body > button {
+    margin-top: 20px;
+    margin-left: 5%;
+    padding: 10px 18px;
+}
+
+.currency-selector {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.currency-selector label {
+    font-size: 18px;
+    font-weight: bold;
+    margin-right: 15px;
+    color: #333;
+}
+
+.currency-selector select {
+    padding: 10px 15px;
+    font-size: 16px;
+    border: 2px solid #6c63ff;
+    border-radius: 6px;
+    cursor: pointer;
+    background: white;
+    color: #333;
+}
+
+.currency-selector select:hover {
+    border-color: #645aec;
+}
+    </style>
+
+    <script>
+        const URL = "https://dummyjson.com/products";
+        const API_KEY = "d655eecf0d3a0a7a9d35c1e0";
+        
+        const currencySymbols = {
+            USD: "$",
+            EUR: "€",
+            INR: "₹",
+            GBP: "£",
+            JPY: "¥",
+            AUD: "A$",
+            CAD: "C$",
+            CHF: "CHF",
+            CNY: "¥",
+            MXN: "$",
+            SGD: "S$",
+            HKD: "HK$",
+            NZD: "NZ$",
+            ZAR: "R"
+        };
+
+        let allProducts = [];
+        let conversionRates = {};
+        let selectedCurrency = "USD";
+
+        async function loadConversionRates() {
+            try {
+                const currencyRes = await fetch(
+                    `https://v6.exchangerate-api.com/v6/${API_KEY}/latest/USD`
+                );
+                const currencyData = await currencyRes.json();
+                conversionRates = currencyData.conversion_rates;
+            } catch (error) {
+                console.log("Error loading exchange rates:", error);
+            }
+        }
+
+        async function LoadProduct() {
+            try {
+                const res = await fetch(URL);
+                const data = await res.json();
+                allProducts = data.products;
+                
+                // Load rates if not already loaded
+                if (Object.keys(conversionRates).length === 0) {
+                    await loadConversionRates();
+                }
+                
+                displayProducts(selectedCurrency);
+
+            } catch (error) {
+                console.log("Error:", error);
+            }
+        }
+
+        function displayProducts(currency) {
+            selectedCurrency = currency;
+            const rate = conversionRates[currency] || 1;
+            const symbol = currencySymbols[currency] || currency;
+            
+            let rows = "";
+            allProducts.forEach((i, index) => {
+                let convertedPrice = i.price * rate;
+                rows += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${i.title}</td>
+                        <td><img src="${i.thumbnail}" alt="${i.title}" width="50" height="50"></td>
+                        <td>${i.category}</td>
+                        <td>${symbol}${convertedPrice.toFixed(2)}</td>
+                        <td>${i.rating}</td>
+                        <td>${i.stock}</td>
+                        <td><button onclick="addToCart(${i.id})">Add to Cart</button></td>
+                    </tr>
+                `;
+            });
+            
+            document.getElementById("product-list").innerHTML = rows;
+            document.getElementById("price-header").textContent = `Price (${currency})`;
+        }
+
+        function changeCurrency(event) {
+            displayProducts(event.target.value);
+        }
+
+        function addToCart(id) {
+            alert(`Product ${id} added to cart!`);
+        }
+
+        LoadProduct();
+    </script>
+</head>
+
+<body>
+
+    <h1 style="text-align: center;">List of Products</h1>
+
+    <div class="currency-selector">
+        <label for="currency-select">Select Currency:</label>
+        <select id="currency-select" onchange="changeCurrency(event)">
+            <option value="USD">USD - US Dollar ($)</option>
+            <option value="EUR">EUR - Euro (€)</option>
+            <option value="INR">INR - Indian Rupee (₹)</option>
+            <option value="GBP">GBP - British Pound (£)</option>
+            <option value="JPY">JPY - Japanese Yen (¥)</option>
+            <option value="AUD">AUD - Australian Dollar (A$)</option>
+            <option value="CAD">CAD - Canadian Dollar (C$)</option>
+            <option value="CHF">CHF - Swiss Franc</option>
+            <option value="CNY">CNY - Chinese Yuan (¥)</option>
+            <option value="MXN">MXN - Mexican Peso ($)</option>
+            <option value="SGD">SGD - Singapore Dollar (S$)</option>
+            <option value="HKD">HKD - Hong Kong Dollar (HK$)</option>
+            <option value="NZD">NZD - New Zealand Dollar (NZ$)</option>
+            <option value="ZAR">ZAR - South African Rand (R)</option>
+        </select>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>S.NO</th>
+                <th>Title</th>
+                <th>Image</th>
+                <th>Category</th>
+                <th id="price-header">Price (USD)</th>
+                <th>Rating</th>
+                <th>Stock</th>
+                <th>Add to cart</th>
+                <label type="checkbox" for="add to cart"></label>
+            </tr>
+        </thead>
+
+        <tbody id="product-list"></tbody>
+    </table>
+    <center><button onclick="LoadProduct()">Go to Cart</button></center>
+
+
+</body>
+</html>
