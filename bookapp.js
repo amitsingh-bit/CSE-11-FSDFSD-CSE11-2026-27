@@ -1,0 +1,15 @@
+const div=document.createElement('div');
+div.setAttribute('class','card');
+const image=document.createElement('img');
+image.setAttribute('src'," ");
+image.setAttribute("width","100px");
+image.setAttribute("height","100px");
+const h2=document.createElement('h2');
+h2.innerText="Price:$4.99";
+const bt=document.createElement("button");
+bt.innerText="AddtoCart";
+div.appendChild(image);
+div.appendChild(h2);
+div.appendChild(bt);
+const parent=document.getElementById("root");
+parent.appendChild(div);
