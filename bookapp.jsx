@@ -1,3 +1,18 @@
+const bookdata=[
+    {
+        name:"Book1",
+        price:4.99,
+    }, 
+    {
+        name:"Book2",
+        price:5.99,
+        
+    },
+    {
+        name:"Book3",
+        price:6.99,
+    },
+]
 const div=document.createElement('div');
 div.setAttribute('class','card');
 const image=document.createElement('img');
