@@ -4,8 +4,8 @@ const navbar = () => {
   return (
     <div className='navbar'>
       <a>Home</a>
-      <a>MyCart</a>
-      <a>MyOrders</a>
+      <a>My Cart</a>
+      <a>My Order</a>
       <a>Settings</a>
       <a>MyProfile</a>
       <a>Logout</a>
